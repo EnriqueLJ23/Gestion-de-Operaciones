@@ -1,0 +1,145 @@
+
+THE BORING ONE
+@layer base {
+    :root {
+      --background: 93 57% 100%;
+      --foreground: 93 56% 2%;
+      --muted: 213 30% 88%;
+      --muted-foreground: 213 9% 37%;
+      --popover: 0 0% 99%;
+      --popover-foreground: 93 56% 1%;
+      --card: 0 0% 99%;
+      --card-foreground: 93 56% 1%;
+      --border: 93 11% 90%;
+      --input: 93 11% 90%;
+      --primary: 93 47% 18%;
+      --primary-foreground: 93 47% 78%;
+      --secondary: 213 47% 18%;
+      --secondary-foreground: 213 47% 78%;
+      --accent: 333 47% 18%;
+      --accent-foreground: 333 47% 78%;
+      --destructive: 15 93% 39%;
+      --destructive-foreground: 0 0% 100%;
+      --ring: 93 47% 18%;
+      --radius: 0.5rem;
+    }
+  
+    .dark {
+      --background: 93 53% 3%;
+      --foreground: 93 27% 99%;
+      --muted: 213 30% 12%;
+      --muted-foreground: 213 9% 63%;
+      --popover: 93 53% 4%;
+      --popover-foreground: 0 0% 100%;
+      --card: 93 53% 4%;
+      --card-foreground: 0 0% 100%;
+      --border: 93 11% 14%;
+      --input: 93 11% 14%;
+      --primary: 93 47% 18%;
+      --primary-foreground: 93 47% 78%;
+      --secondary: 213 47% 18%;
+      --secondary-foreground: 213 47% 78%;
+      --accent: 333 47% 18%;
+      --accent-foreground: 333 47% 78%;
+      --destructive: 15 93% 54%;
+      --destructive-foreground: 0 0% 100%;
+      --ring: 93 47% 18%;
+    }
+  }
+
+
+  THE COLOR ONE
+  :root {
+    --background: 143 60% 99%;
+    --foreground: 143 54% 3%;
+    --muted: 323 39% 95%;
+    --muted-foreground: 323 13% 32%;
+    --popover: 143 60% 98%;
+    --popover-foreground: 143 54% 2%;
+    --card: 143 60% 98%;
+    --card-foreground: 143 54% 2%;
+    --border: 143 9% 90%;
+    --input: 143 9% 90%;
+    --primary: 143 99% 52%;
+    --primary-foreground: 143 99% 12%;
+    --secondary: 323 99% 52%;
+    --secondary-foreground: 0 0% 100%;
+    --accent: 323 99% 52%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 12 99% 23%;
+    --destructive-foreground: 12 99% 83%;
+    --ring: 143 99% 52%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 143 50% 4%;
+    --foreground: 143 40% 97%;
+    --muted: 323 39% 5%;
+    --muted-foreground: 323 13% 68%;
+    --popover: 143 50% 5%;
+    --popover-foreground: 143 40% 98%;
+    --card: 143 50% 5%;
+    --card-foreground: 143 40% 98%;
+    --border: 143 9% 13%;
+    --input: 143 9% 13%;
+    --primary: 143 99% 52%;
+    --primary-foreground: 143 99% 12%;
+    --secondary: 323 99% 52%;
+    --secondary-foreground: 0 0% 100%;
+    --accent: 323 99% 52%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 12 99% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --ring: 143 99% 52%;
+  }
+
+
+
+  LA COSA FEA 
+  @layer base {
+    :root {
+      --background: 65.66 100% 50%;
+      --foreground: 310.19 100% 59.87%;
+      --muted: 213 30% 88%;
+      --muted-foreground: 213 9% 37%;
+      --popover: 316.98 100% 47.31%;
+      --popover-foreground: 93 100% 50%;
+      --card: 113.21 100% 50%;
+      --card-foreground: 271.7 100% 48.46%;
+      --border: 93 11% 90%;
+      --input: 93 11% 90%;
+      --primary: 326.04 100% 50%;
+      --primary-foreground: 63.4 100% 50.22%;
+      --secondary: 240 100% 50%;
+      --secondary-foreground: 0 100% 50%;
+      --accent: 333 47% 18%;
+      --accent-foreground: 333 47% 78%;
+      --destructive: 15 93% 39%;
+      --destructive-foreground: 0 0% 100%;
+      --ring: 93 47% 18%;
+      --radius: 0.5rem;
+    }
+  
+    .dark {
+      --background: 93 53% 3%;
+      --foreground: 93 27% 99%;
+      --muted: 213 30% 12%;
+      --muted-foreground: 213 9% 63%;
+      --popover: 93 53% 4%;
+      --popover-foreground: 0 0% 100%;
+      --card: 93 53% 4%;
+      --card-foreground: 0 0% 100%;
+      --border: 93 11% 14%;
+      --input: 93 11% 14%;
+      --primary: 93 47% 18%;
+      --primary-foreground: 93 47% 78%;
+      --secondary: 213 47% 18%;
+      --secondary-foreground: 213 47% 78%;
+      --accent: 333 47% 18%;
+      --accent-foreground: 333 47% 78%;
+      --destructive: 15 93% 54%;
+      --destructive-foreground: 0 0% 100%;
+      --ring: 93 47% 18%;
+    }
+  }

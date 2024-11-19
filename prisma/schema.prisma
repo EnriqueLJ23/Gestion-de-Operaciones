@@ -1,0 +1,234 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model role {
+  id          Int       @id @default(autoincrement())
+  nombre      String    @unique @db.VarChar(40)
+  descripcion String?   @db.VarChar(255)
+  usuarios    usuarios[]
+}
+
+model usuarios {
+  id                   Int           @id @default(autoincrement())
+  nombre               String?       @unique @db.VarChar(50)
+  departamentoid       Int?
+  roleid               Int
+  especialidad         String?       @db.VarChar(30) // Para técnicos
+  aulas_responsable    aula[]        @relation("AulaResponsable")
+  edificios_encargado  edificio[]
+  reportes_creados     reportes[]    @relation("ReporteCreador")
+  reportes_asignados   reportes[]    @relation("ReporteTecnico")
+  consultas            consultas[]
+  elementos_modificados elementos[]
+  departamento         departamento? @relation(fields: [departamentoid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  departamentoACargo   departamento? @relation("DepartamentoEncargado")
+  rol                  role          @relation(fields: [roleid], references: [id])
+  cambios_solicitados    cambios[] @relation("CambioSolicitante")
+  cambios_aprobados      cambios[] @relation("CambioAprobador")
+  cambios_implementados  cambios[] @relation("CambioImplementador")
+  evaluaciones_recibidas evaluacion_tecnico[] // Añade esta línea
+
+
+}
+
+model aula {
+  id           Int            @id @default(autoincrement())
+  nombre       String         @unique @db.VarChar(30)
+  edificioid   Int?
+  responsableid Int?
+  edificio     edificio?      @relation(fields: [edificioid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  responsable  usuarios?      @relation("AulaResponsable", fields: [responsableid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  elementos    elementos[]
+  reportes     reportes[]
+}
+
+model consultas {
+  id              Int       @id @default(autoincrement())
+  reporteid       Int?
+  tecnicoid       Int?
+  fechadeconsulta DateTime? @db.Timestamp(6)
+  notasdeconsulta String?   @db.VarChar(1000)
+  reportes        reportes? @relation(fields: [reporteid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tecnico         usuarios? @relation(fields: [tecnicoid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model departamento {
+  id              Int       @id @default(autoincrement())
+  nombre          String    @unique @db.VarChar(30)
+  encargadoId     Int?      @unique
+  usuarios        usuarios[]
+  edificio        edificio[]
+  encargado       usuarios? @relation("DepartamentoEncargado", fields: [encargadoId], references: [id])
+}
+
+model edificio {
+  id             Int           @id @default(autoincrement())
+  nombre         String        @unique @db.VarChar(20)
+  departamentoid Int?
+  encargadoid    Int?
+  aula           aula[]
+  departamento   departamento? @relation(fields: [departamentoid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  encargado      usuarios?     @relation(fields: [encargadoid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model elementos {
+  id                   Int       @id @default(autoincrement())
+  custom_id            String    @unique @db.VarChar(10)
+  fechadecompra        DateTime? @db.Date
+  aulaid               Int?
+  marca                String?   @db.VarChar(255)
+  modelo               String?   @db.VarChar(255)
+  fechadeultimocambio  DateTime? @db.Timestamp(6)
+  autorultimocambioid  Int?
+  element_type         String    @db.VarChar(30) // 'computadora', 'impresora', or 'proyector'
+  
+  // Computer-specific attributes
+  cpu                  String?   @db.VarChar(20)
+  ram                  Int?
+  almacenamiento       String?   @db.VarChar(30)
+  softwareinstalado    String?   @db.VarChar(255)
+  sistemaoperativo     String?   @db.VarChar(30)
+
+  // Printer-specific attributes
+  hojasimpresas        Int?
+  niveldetinta         Int?
+
+  // Projector-specific attributes
+  horasdeuso           Int?
+
+  aula                 aula?     @relation(fields: [aulaid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  autorultimocambio    usuarios? @relation(fields: [autorultimocambioid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  reportes              reportes[]
+  cambios               cambios[]
+}
+model categoria_servicio {
+  id          Int       @id @default(autoincrement())
+  nombre      String    @unique @db.VarChar(50)
+  descripcion String?   @db.Text
+  servicios   servicio[]
+}
+
+model servicio {
+  id                  Int       @id @default(autoincrement())
+  nombre              String    @unique @db.VarChar(100)
+  descripcion         String    @db.Text
+  categoriaid         Int
+  tiempo_respuesta    Int       // Tiempo en minutos
+  tiempo_resolucion   Int       // Tiempo en minutos
+  horario_servicio    String    @db.VarChar(50)  // ej: "24/7", "Lun-Vie 8:00-17:00"
+  nivel_prioridad     String    @db.VarChar(20)  // Alta, Media, Baja
+  impacto             String    @db.VarChar(20)  // Alto, Medio, Bajo
+  activo              Boolean   @default(true)
+  
+  // Relaciones
+  categoria           categoria_servicio @relation(fields: [categoriaid], references: [id])
+  reportes           reportes[]
+}
+
+// Modificación a tu modelo existente de reportes
+model reportes {
+  id                Int         @id @default(autoincrement())
+  creadorid         Int?
+  fechadecreacion   DateTime?   @db.Timestamp(6)
+  aulaid            Int?
+  elementoid        Int? 
+  servicioid        Int?      
+  descripcion       String?     // Original incident description
+  diagnostico       String?     // Original incident description
+  solucion          String?     @db.Text  // New field for resolution details
+  requiere_cambios  Boolean?    @default(false)  // New field to track if changes are needed
+  fecha_resolucion  DateTime?   @db.Timestamp(6) // New field to track when it was resolved
+  tecnicoasignadoid Int?
+  prioridad         String?     @db.VarChar(20)
+  categoria         String?     @db.VarChar(20)
+  estado            String?     @db.VarChar(255)
+  fecha_limite_respuesta DateTime? @db.Timestamp(6)
+  fecha_limite_resolucion DateTime? @db.Timestamp(6)
+  consultas         consultas[]
+  cambios           cambios[] 
+  aula              aula?       @relation(fields: [aulaid], references: [id])
+  creador           usuarios?   @relation("ReporteCreador", fields: [creadorid], references: [id])
+  tecnicoasignado   usuarios?   @relation("ReporteTecnico", fields: [tecnicoasignadoid], references: [id])
+  elemento          elementos?  @relation(fields: [elementoid], references: [id])
+  servicio          servicio?  @relation(fields: [servicioid], references: [id])
+  evaluacion       evaluacion_tecnico?
+
+}
+
+model evaluacion_tecnico {
+  id                Int       @id @default(autoincrement())
+  reporteid         Int       @unique // Una evaluación por reporte
+  tecnicoid         Int
+  calificacion_tecnico Int    // 1-5 (convertido de Excellent/Good/Regular)
+  tiempo_respuesta  Int       // 1-5 (convertido de Fast/OnTime/Slow)
+  comentarios       String?   @db.Text
+  fecha_evaluacion  DateTime  @default(now())
+  
+  // Métricas calculadas
+  puntuacion_total  Float     // Promedio de calificación_tecnico y tiempo_respuesta
+  
+  // Relaciones
+  reporte          reportes   @relation(fields: [reporteid], references: [id])
+  tecnico          usuarios   @relation(fields: [tecnicoid], references: [id])
+
+  @@index([tecnicoid])
+}
+
+model componente_catalogo {
+  id          Int        @id @default(autoincrement())
+  nombre      String     @unique @db.VarChar(50)  
+  precio      Decimal    @db.Decimal(10, 2)      
+  categoria   String     @db.VarChar(20)         
+  descripcion String?    @db.Text                
+
+  // Relación con cambios - asegurándose de usar el mismo nombre que en el modelo cambios
+  cambios     cambios[]  @relation("ComponenteCatalogoCambios")
+}
+model cambios {
+  id                    Int       @id @default(autoincrement())
+  titulo                String    @db.VarChar(255)
+  descripcion           String    @db.Text   // Normal, Estándar, Emergencia
+  prioridad            String    @db.VarChar(20)    // Alta, Media, Baja
+  impacto              String    @db.VarChar(20)    // Alto, Medio, Bajo
+  estado               String    @db.VarChar(50)    // Pendiente, En revisión, Aprobado, En progreso, Completado, Rechazado
+  fechaCreacion        DateTime  @default(now())
+  fechaPlanificada     DateTime?
+  fechaImplementacion  DateTime?
+  fechaCierre          DateTime?
+  componente_catalogoid Int?
+
+  // Relaciones con usuarios
+  solicitanteid        Int?
+  aprobadorid          Int?
+  implementadorid      Int?
+  
+  // Relaciones con elementos afectados
+  elementoid           Int?
+  reporteid            Int?      // Si el cambio está relacionado con un reporte
+  
+  // Campos de análisis
+  analisisImpacto      String?   @db.Text
+  analisisRiesgo       String?   @db.Text
+  planRollback         String?   @db.Text
+  
+  // Resultados
+  resultadoPruebas     String?   @db.Text
+  resultadoImplementacion String? @db.Text
+  notasCierre          String?   @db.Text
+  
+  // Referencias
+  solicitante          usuarios? @relation("CambioSolicitante", fields: [solicitanteid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  aprobador            usuarios? @relation("CambioAprobador", fields: [aprobadorid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  implementador        usuarios? @relation("CambioImplementador", fields: [implementadorid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  elemento             elementos? @relation(fields: [elementoid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  reporte              reportes? @relation(fields: [reporteid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  componente_catalogo  componente_catalogo? @relation("ComponenteCatalogoCambios", fields: [componente_catalogoid], references: [id])
+
+}
