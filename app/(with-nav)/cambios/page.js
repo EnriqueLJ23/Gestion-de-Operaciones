@@ -1,8 +1,13 @@
 import ChangeManagementDashboard from "@/components/CambiosInter";
 import prisma from "@/lib/db";
+import { auth } from "@/auth";
 
 export default async function Home() {
-let cambios = null;
+  const session = await auth()
+  if (!session.user) return null
+
+
+  let cambios = null;
   if(session.user.role === "tecnico"){
      cambios = await prisma.cambios.findMany({
       where: {solicitanteid: parseInt(session.user.id)},
