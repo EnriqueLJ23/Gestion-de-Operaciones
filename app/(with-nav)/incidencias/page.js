@@ -94,6 +94,49 @@ export default async function Incidencias() {
       },
     });  
   }
+  if(session.user.role === "jefe_de_taller"){
+    incidencias = await prisma.reportes.findMany({
+      include: {
+        creador: {
+          select: {
+            nombre: true,
+          },
+        }, 
+        tecnicoasignado: {
+          select: {
+            nombre: true,
+          },
+        },
+        aula: {
+          select: {
+            nombre: true,
+            edificio: {
+              select: {
+                nombre: true,
+                departamento: {
+  
+                  select: {
+                    nombre: true
+                  }
+                }
+              }
+            }
+          }
+        },
+        servicio: {
+          select: {
+            nombre: true,
+          },
+        },
+        elemento: {
+          select: {
+            custom_id: true,
+          },
+        },
+      },
+    });  
+  }
+
   if(session.user.role === "tecnico"){
     incidencias = await prisma.reportes.findMany({
       where: {tecnicoasignadoid: parseInt(session.user.id)},

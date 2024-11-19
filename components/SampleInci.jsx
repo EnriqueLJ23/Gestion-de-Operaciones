@@ -37,7 +37,20 @@ const IncidentManagement = ({ edificio, departamento, incidencias, aulas, elemen
           servicio={servicio}
           incidencias={incidencias}
           departamento={departamento}
-        /> : <TecnicoIncidencias   session={session}
+        /> 
+        : userRole === 'jefe_de_taller' 
+          ? 
+          <AdminIncidentesUI
+          session={session}
+          aulas={aulas}
+          edificio={edificio}
+          elementos={elementos}
+          servicio={servicio}
+          incidencias={incidencias}
+          departamento={departamento}
+          />
+          :
+        <TecnicoIncidencias   session={session}
         aulas={aulas}
         edificio={edificio}
         elementos={elementos}
