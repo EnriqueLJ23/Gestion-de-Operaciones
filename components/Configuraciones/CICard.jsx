@@ -11,7 +11,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import DeleteDialog from './DeleteDialog';
+import DeleteDialog from '../DeleteDialog';
 import { Button } from "@/components/ui/button";
 
 const IconWithTooltip = ({ icon: Icon, label, value }) => (

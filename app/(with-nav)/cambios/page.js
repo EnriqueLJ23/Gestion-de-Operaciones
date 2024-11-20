@@ -1,4 +1,4 @@
-import ChangeManagementDashboard from "@/components/CambiosInter";
+import ChangeManagementDashboard from "@/components/Cambios/CambiosInter";
 import prisma from "@/lib/db";
 import { auth } from "@/auth";
 

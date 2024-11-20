@@ -1,8 +1,8 @@
 import prisma from "@/lib/db"
 import { auth } from "@/auth";
-import { IncidenciaID } from "@/components/IncidenciaUnique";
-import IncidenciasUniqueT from "@/components/IncidenciasUniqueT";
-import IncidenciasUsuario from "@/components/IncidenciasUsuario";
+import { IncidenciaID } from "@/components/Incidentes/IncidenciaUnique";
+import IncidenciasUniqueT from "@/components/Cambios/IncidenciasUniqueT";
+import IncidenciasUsuario from "@/components/Incidentes/IncidenciasUsuario";
 
 export default async function Page({ params }) {
   const session = await auth()

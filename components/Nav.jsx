@@ -67,9 +67,8 @@ export default function Nav({ rol, username }) {
   )
 
   return (
-    <header className="bg-background sticky top-0 h-16 border-b w-full">
+    <header className="bg-background sticky top-0 h-16 border-b w-full z-50">
       <div className="flex h-16 items-center px-2 sm:px-4 w-full">
-        {/* Mobile Menu Button */}
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="outline" size="icon" className="mr-2 lg:hidden">
@@ -96,7 +95,6 @@ export default function Nav({ rol, username }) {
           </SheetContent>
         </Sheet>
 
-        {/* Logo */}
         <div className="flex items-center gap-2 mr-4 shrink-0">
           <div className="bg-primary p-2 rounded">
             <Settings className="h-5 w-5 text-primary-foreground" />
@@ -105,7 +103,6 @@ export default function Nav({ rol, username }) {
           <span className="font-bold text-lg sm:hidden">BMG</span>
         </div>
 
-        {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center space-x-1 overflow-x-auto scrollbar-hide flex-grow">
           {navigationLinks.map((link) => (
             <NavLink key={link.href} {...link} />

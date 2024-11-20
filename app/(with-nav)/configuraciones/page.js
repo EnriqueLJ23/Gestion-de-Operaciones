@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 import prisma
  from "@/lib/db";
 
-import CIManagement from '@/components/CiElements';
+import CIManagement from '@/components/Configuraciones/CiElements';
 export default async function Home() {
   const elementos = await prisma.elementos.findMany({
     include: {

@@ -9,13 +9,6 @@ import {
   TableRow 
 } from '@/components/ui/table';
 import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogTrigger 
-} from '@/components/ui/dialog';
-import { 
   Card, 
   CardContent, 
   CardHeader, 
@@ -23,16 +16,9 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Search, UserPlus, Edit2, Trash2 } from 'lucide-react';
-import DeleteDialog from './DeleteDialog';
+import DeleteDialog from '../DeleteDialog';
 import { FormUsuarios } from '@/app/(with-nav)/usuarios/FormU';
 const UserManagement = ({usuarios, departamentos}) => {
   const [users] = useState([

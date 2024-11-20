@@ -1,6 +1,6 @@
 import prisma from "@/lib/db";
 import { auth } from "@/auth";
-import IncidentManagement from "@/components/SampleInci";
+import IncidentManagement from "@/components/Incidentes/SampleInci";
 
 export default async function Incidencias() {
 

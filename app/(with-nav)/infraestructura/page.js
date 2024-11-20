@@ -1,4 +1,4 @@
-import InfrastructureManager from "@/components/InfraUI"
+import InfrastructureManager from "@/components/Infraestructura/InfraUI";
 import prisma from "@/lib/db";
 
 export default async function InfraestructuraPage() {

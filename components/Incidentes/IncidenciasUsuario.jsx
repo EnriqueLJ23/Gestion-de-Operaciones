@@ -16,7 +16,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 import {
     AlertCircle,
     Clock,
@@ -31,7 +31,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from "@/hooks/use-toast";
-import EvaluacionDialog from './EvaluacionDialog';
+import EvaluacionDialog from '../EvaluacionDialog';
 
 export function IncidenciasUsuario({ incidencia, servicio, tecnico }) {
     const [isSubmitting, setIsSubmitting] = useState(false);

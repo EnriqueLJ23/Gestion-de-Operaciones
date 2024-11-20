@@ -17,7 +17,7 @@ import { ComputadoraForm } from '@/app/(with-nav)/configuraciones/FormCompus';
 import { ImpresoraForm } from '@/app/(with-nav)/configuraciones/FormImpre';
 import { ProyectorForm } from '@/app/(with-nav)/configuraciones/FormProyectores';
 import { deleteCI } from '@/app/actions/elementosCI';
-import DeleteDialog from './DeleteDialog';
+import DeleteDialog from '../DeleteDialog';
 import CICard from './CICard';
 
 const CIManagement = ({data}) => {
@@ -31,17 +31,6 @@ const CIManagement = ({data}) => {
       case 'proyector': return <Projector className="h-5 w-5" />;
       default: return <Server className="h-5 w-5" />;
     }
-  };
-
-  const getStatusColor = (item) => {
-    // Ejemplo de lógica para determinar el estado basado en diferentes criterios
-    if (item.element_type === 'impresora' && item.niveldetinta < 20) {
-      return { color: 'bg-red-100 text-red-800', text: 'Tinta Baja' };
-    }
-    if (item.element_type === 'proyector' && item.horasdeuso > 800) {
-      return { color: 'bg-yellow-100 text-yellow-800', text: 'Mantenimiento Requerido' };
-    }
-    return { color: 'bg-green-100 text-green-800', text: 'Activo' };
   };
 
   const filteredItems = data.filter(item => {

@@ -27,13 +27,17 @@ COPY . .
 # Uncomment the following line in case you want to disable telemetry during the build.
 # ENV NEXT_TELEMETRY_DISABLED=1
 
+# Run Prisma generate to prepare the Prisma Client
+RUN npx prisma generate
+
+
 RUN \
   if [ -f yarn.lock ]; then yarn run build; \
   elif [ -f package-lock.json ]; then npm run build; \
   elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
   else echo "Lockfile not found." && exit 1; \
   fi
-RUN npm prisma migrate deploy
+
 # Production image, copy all the files and run next
 FROM base AS runner
 WORKDIR /app
@@ -47,10 +51,21 @@ RUN adduser --system --uid 1001 nextjs
 
 COPY --from=builder /app/public ./public
 
+# Copy only the necessary Prisma files
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder /app/prisma ./prisma
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Create a startup script
+COPY --from=builder /app/node_modules/.bin/prisma ./prisma-cli
+
+USER root
+COPY docker-entrypoint.sh ./
+RUN chmod +x ./docker-entrypoint.sh
 
 USER nextjs
 
@@ -61,4 +76,4 @@ ENV PORT=3000
 # server.js is created by next build from the standalone output
 # https://nextjs.org/docs/pages/api-reference/next-config-js/output
 ENV HOSTNAME="0.0.0.0"
-CMD ["node", "server.js"]
+CMD ["./docker-entrypoint.sh"]

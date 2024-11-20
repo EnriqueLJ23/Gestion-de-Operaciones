@@ -2,10 +2,14 @@
   "name": "gestion_de_operaciones",
   "version": "0.1.0",
   "private": true,
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "db:seed": "npx prisma db seed",
     "lint": "next lint"
   },
   "dependencies": {

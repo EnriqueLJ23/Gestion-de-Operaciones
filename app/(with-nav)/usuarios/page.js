@@ -1,10 +1,6 @@
-import columns from "@/components/DataTable/columns/columnsUsuarios";
-import { DataTable } from "@/components/DataTable/DataTable";
-import FormUsuarios from "./FormU";
+
 import prisma from "@/lib/db";
-import { Search, Plus, Edit, Trash } from 'lucide-react';
-import { Button } from "@/components/ui/button";
-import UserManagement from "@/components/UsuariosInter";
+import UserManagement from "@/components/Usuarios/UsuariosInter";
 
 export default async function Home() {
   const usuarios = await prisma.usuarios.findMany({

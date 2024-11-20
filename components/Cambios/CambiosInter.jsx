@@ -8,7 +8,7 @@ import {
 import ChangeCard from './ChangeCard';
 const ChangeManagementDashboard = ({ cambios }) => {
   const [selectedTab, setSelectedTab] = useState('todos');
-  // Calculate statistics
+ 
   const totalChanges = cambios.length;
   const pendingChanges = cambios.filter(change => change.estado === 'Pendiente').length;
   const completedChanges = cambios.filter(change => change.estado === 'Completado').length;
@@ -16,7 +16,7 @@ const ChangeManagementDashboard = ({ cambios }) => {
 
   return (
     <div className="p-6 max-w-[1100px] w-full mx-auto">
-      {/* Header Section */}
+     
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold mb-2">Gestión de Cambios</h1>
@@ -24,7 +24,7 @@ const ChangeManagementDashboard = ({ cambios }) => {
         </div>
       </div>
 
-      {/* Statistics Cards */}
+     
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <Card>
           <CardHeader className="pb-2">
@@ -61,7 +61,6 @@ const ChangeManagementDashboard = ({ cambios }) => {
       </div>
 
 
-      {/* Filters and Search */}
       <div className="flex flex-col md:flex-row gap-4 mb-6">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -83,7 +82,6 @@ const ChangeManagementDashboard = ({ cambios }) => {
         </div>
       </div>
 
-      {/* Tabs */}
       <div className="flex border-b mb-6">
         {['Todos', 'Pendiente', 'Autorizados', 'Rechazados', 'Completados'].map((tab) => (
           <button

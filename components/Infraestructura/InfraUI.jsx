@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DepartamentoForm } from '@/app/(with-nav)/infraestructura/FormDepartamentos';
 import { EdificioForm } from '@/app/(with-nav)/infraestructura/FormEdificios';
 import { AulaForm } from '@/app/(with-nav)/infraestructura/FormAulas';
-import DeleteDialog from './DeleteDialog';
+import DeleteDialog from '../DeleteDialog';
 import { deleteAula, deleteDepartamento, deleteEdificio } from '@/app/actions/departamentos';
 
 const InfrastructureManager = ({departamentos, edificios,aulas,usus,elementos}) => {

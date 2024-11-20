@@ -3,7 +3,7 @@ import Image from "next/image";
 export default function Home() {
   return (
     <>
-      <h1>GIRL WOULD YOU LOVE ME IF I WAS BROWN</h1>
+      <h1>I WISH I KNEW YOU WANTED ME</h1>
     </>
   );
 }
