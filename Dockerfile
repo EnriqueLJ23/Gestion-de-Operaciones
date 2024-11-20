@@ -59,12 +59,31 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Create a startup script
-COPY --from=builder /app/node_modules/.bin/prisma ./prisma-cli
+# Copy Prisma CLI and NPX
+COPY --from=builder /app/node_modules/.bin/prisma /usr/local/bin/prisma
+COPY --from=builder /app/node_modules/.bin/npx /usr/local/bin/npx
 
-USER root
-COPY docker-entrypoint.sh .
-RUN chmod +x docker-entrypoint.sh
+# Create and set up entrypoint script
+RUN echo '#!/bin/sh\n\
+\n\
+# Wait for database to be ready\n\
+echo "Waiting for database to be ready..."\n\
+prisma db push --skip-generate\n\
+\n\
+# Apply migrations\n\
+echo "Running Prisma migrations..."\n\
+prisma migrate deploy\n\
+\n\
+# Run seeds if enabled\n\
+if [ "$SHOULD_SEED" = "true" ]; then\n\
+    echo "Running database seeds..."\n\
+    prisma db seed\n\
+fi\n\
+\n\
+# Start the application\n\
+echo "Starting the application..."\n\
+exec node server.js' > /usr/local/bin/docker-entrypoint.sh && \
+    chmod +x /usr/local/bin/docker-entrypoint.sh
 
 USER nextjs
 
@@ -75,4 +94,5 @@ ENV PORT=3000
 # server.js is created by next build from the standalone output
 # https://nextjs.org/docs/pages/api-reference/next-config-js/output
 ENV HOSTNAME="0.0.0.0"
-CMD ["./docker-entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+
