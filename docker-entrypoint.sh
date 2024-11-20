@@ -1,36 +1,27 @@
 #!/bin/sh
-set -e  # Asegura que el script falle si ocurre un error
+set -e
 
-# Esperar a que la base de datos esté lista
+# Wait for database to be ready
 echo "Waiting for database to be ready..."
 until nc -z db 5432; do
   echo "Database is not ready. Waiting..."
   sleep 2
 done
 
-# Ejecutar Prisma db push para sincronizar el esquema
+# Push Prisma schema to database
 echo "Pushing Prisma schema to database..."
-if ! npx prisma db push --skip-generate; then
-  echo "Error: Failed to push schema."
-  exit 1
-fi
+npx prisma db push --skip-generate
 
-# Aplicar migraciones
+# Apply migrations
 echo "Running Prisma migrations..."
-if ! npx prisma migrate deploy; then
-  echo "Error: Failed to apply migrations."
-  exit 1
-fi
+npx prisma migrate deploy
 
-# Ejecutar semillas si está habilitado
+# Run seeds if enabled
 if [ "$SHOULD_SEED" = "true" ]; then
   echo "Running database seeds..."
-  if ! npx prisma db seed; then
-    echo "Error: Failed to seed database."
-    exit 1
-  fi
+  npx prisma db seed
 fi
 
-# Iniciar la aplicación
+# Start the application
 echo "Starting the application..."
-exec node ./server.js
+exec node server.js
