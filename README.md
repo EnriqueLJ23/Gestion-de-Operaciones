@@ -37,10 +37,20 @@ Sistema de Gestion de Operaciones de TI siguiendo el framework de procesos ITIL.
    ```
 3. Completa las variables de entorno en el archivo .env. Ejemplo:
    ```bash
-    DATABASE_URL=postgres://postgres:password@db:5432/mydatabase
+    # App Configuration
+    HOSTNAME=0.0.0.0
+    SHOULD_SEED=true
+    DATABASE_URL=postgres://postgres:1234@localhost:5432/configuraciones?sslmode=disable
+
+    # Auth Configuration
     AUTH_SECRET=loveslikesuicide
     NEXTAUTH_URL=http://localhost:3000
     AUTH_TRUST_HOST=true
+
+    # Database Configuration
+    POSTGRES_USER=postgres
+    POSTGRES_PASSWORD=1234
+    POSTGRES_DB=configuraciones
    ```
 4. Construye y levanta los contenedores con Docker Compose::
    ```bash
