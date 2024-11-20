@@ -50,11 +50,10 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 COPY --from=builder /app/public ./public
-
-# Copy only the necessary Prisma files
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/prisma ./prisma
+
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
@@ -64,9 +63,8 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder /app/node_modules/.bin/prisma ./prisma-cli
 
 USER root
-COPY docker-entrypoint.sh ./
-RUN chmod +x /app/docker-entrypoint.sh && \
-    chown nextjs:nodejs /app/docker-entrypoint.sh
+COPY docker-entrypoint.sh .
+RUN chmod +x docker-entrypoint.sh
 
 USER nextjs
 
