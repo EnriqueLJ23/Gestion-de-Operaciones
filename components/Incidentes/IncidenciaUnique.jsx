@@ -43,9 +43,6 @@ import * as z from "zod";
 import { updateReporte } from "@/app/actions/incidencias";
 
 const formSchema = z.object({
-    servicioId: z.string({
-        required_error: "Por favor seleccione un servicio",
-    }),
     tecnicoId: z.string({
         required_error: "Por favor seleccione un técnico",
     }),
@@ -59,13 +56,12 @@ const formSchema = z.object({
 
 export function IncidenciaID({ incidencia, servicio, tecnico }) {
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [showForm, setShowForm] = useState(true);
+    const [showForm, setShowForm] = useState(incidencia.estado === "Pendiente" ? false : true);
     const { toast } = useToast();
 
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            servicioId: incidencia.servicioid.toString() || undefined,
             tecnicoId: incidencia.tecnicoasignadoid?.toString() || undefined,
             prioridad: incidencia.prioridad?.toString() || undefined,
             categoria: incidencia.categoria?.toString() || undefined,
@@ -266,38 +262,7 @@ export function IncidenciaID({ incidencia, servicio, tecnico }) {
                                                 </FormItem>
                                             )}
                                         />
-
-                                        <FormField
-                                            control={form.control}
-                                            name="servicioId"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Servicio</FormLabel>
-                                                    <FormControl>
-                                                        <Select
-                                                            value={field.value}
-                                                            onValueChange={field.onChange}
-                                                            disabled={showForm}
-                                                        >
-                                                            <SelectTrigger>
-                                                                <SelectValue placeholder="Seleccione un servicio" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                {servicio.map((service) => (
-                                                                    <SelectItem
-                                                                        key={service.id}
-                                                                        value={service.id.toString()}
-                                                                    >
-                                                                        {service.nombre}
-                                                                    </SelectItem>
-                                                                ))}
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
+                      
                                         <FormField
                                             control={form.control}
                                             name="tecnicoId"
@@ -345,9 +310,9 @@ export function IncidenciaID({ incidencia, servicio, tecnico }) {
                                                                 <SelectValue placeholder="Seleccione la prioridad" />
                                                             </SelectTrigger>
                                                             <SelectContent>
-                                                                <SelectItem value="alta">Alta</SelectItem>
-                                                                <SelectItem value="media">Media</SelectItem>
-                                                                <SelectItem value="baja">Baja</SelectItem>
+                                                                <SelectItem value="Alta">Alta</SelectItem>
+                                                                <SelectItem value="Media">Media</SelectItem>
+                                                                <SelectItem value="Baja">Baja</SelectItem>
                                                             </SelectContent>
                                                         </Select>
                                                     </FormControl>
@@ -365,7 +330,7 @@ export function IncidenciaID({ incidencia, servicio, tecnico }) {
                                                 Editar Incidencia
                                             </Button>
                                         ) }
-                                        {incidencia.estado !== "Pendiente" && incidencia.estado !== "Liberado" && !showForm && (
+                                        {incidencia.estado === "Pendiente" && (
                                             <Button
                                             type="submit"
                                             className="w-full"
@@ -415,7 +380,7 @@ export function IncidenciaID({ incidencia, servicio, tecnico }) {
                             
                         </div>
                     )}
-                      {incidencia.estado === "Resuelto" && (
+                      {incidencia.estado === "Cerrada" && (
                         <div className="mt-8 bg-green-50 p-6 rounded-lg border border-green-200">
                             <div className="flex items-center gap-2 mb-4">
                                 <CheckCircle2 className="h-6 w-6 text-green-600" />

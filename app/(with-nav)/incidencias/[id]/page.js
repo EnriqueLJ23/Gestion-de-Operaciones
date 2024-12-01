@@ -1,7 +1,7 @@
 import prisma from "@/lib/db"
 import { auth } from "@/auth";
 import { IncidenciaID } from "@/components/Incidentes/IncidenciaUnique";
-import IncidenciasUniqueT from "@/components/Cambios/IncidenciasUniqueT";
+import IncidenciasUniqueT from "@/components/Incidentes/IncidenciasUniqueT";
 import IncidenciasUsuario from "@/components/Incidentes/IncidenciasUsuario";
 
 export default async function Page({ params }) {
@@ -75,7 +75,8 @@ export default async function Page({ params }) {
     select: {nombre: true, categoria: true, id: true}
   })
 
-
+  console.log(incidencia);
+  
   if (session.user.role === "administrador" ) {
     return (
       <>
@@ -93,8 +94,8 @@ export default async function Page({ params }) {
 
   return (
     <>
-      <IncidenciasUsuario incidencia={incidencia} servicio={servicio} tecnico={tecnico}/>
-    </>
+    <IncidenciasUsuario incidencia={incidencia} servicio={servicio} tecnico={tecnico}/>
+  </>
   )
 
   }

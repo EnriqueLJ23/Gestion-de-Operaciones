@@ -88,9 +88,7 @@ const IncidentesUI = ({ incidencias, aulas, elementos, session, edificio, servic
     const [statusFilter, setStatusFilter] = useState('all');
     const [serviceFilter, setServiceFilter] = useState('all');
     const [priorityFilter, setPriorityFilter] = useState('all');
-    const [timeRange, setTimeRange] = useState('today');
-    const [activeTab, setActiveTab] = useState('dashboard');
-  
+
     const filteredIncidencias = useMemo(() => {
       return incidencias.filter(incident => {
         const matchesSearch = incident.descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -127,9 +125,9 @@ const IncidentesUI = ({ incidencias, aulas, elementos, session, edificio, servic
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos los estados</SelectItem>
-                <SelectItem value="pendiente">Pendientes</SelectItem>
-                <SelectItem value="en progreso">En Progreso</SelectItem>
-                <SelectItem value="resolved">Resueltas</SelectItem>
+                <SelectItem value="Pendiente">Pendientes</SelectItem>
+                <SelectItem value="En Progreso">En Progreso</SelectItem>
+                <SelectItem value="Cerrada">Resueltas</SelectItem>
               </SelectContent>
             </Select>
   
@@ -222,7 +220,7 @@ const IncidentesUI = ({ incidencias, aulas, elementos, session, edificio, servic
             
             <div className="col-span-12 md:col-span-2 flex md:flex-col gap-2 justify-end">
             
-            {incident.estado === "Resuelto" &&
+            {incident.estado === "Cerrada" &&
               <Link href={`/incidencias/${incident.id}`} className="w-full">
               <Button className="w-full" size="sm">Ver Detalles</Button>
             </Link>

@@ -50,8 +50,7 @@ export function IncidenciasUsuario({ incidencia, servicio, tecnico }) {
         reportedAt: incidencia.fechadecreacion,
         respondBy: incidencia.fecha_limite_respuesta,
         finishBy: incidencia.fecha_limite_resolucion,
-        servicio: incidencia.servicio.nombre,
-        tecnicoN: incidencia.tecnicoasignado.nombre,
+        tecnicoN: incidencia.tecnicoasignado?.nombre,
         estado: "Resuelto", // This would come from your data
         diagnostico: "El equipo presentaba problemas de conectividad debido a un cable de red dañado.",
         solucion: "Se reemplazó el cable de red y se verificó la conectividad."
@@ -93,7 +92,7 @@ export function IncidenciasUsuario({ incidencia, servicio, tecnico }) {
                             <span>Incidencia #{incident.id}</span>
                         </div>
                         <span className={`${getPriorityStyles(incident.priority)} ml-4`}>
-                            {incident.priority.toUpperCase()}
+                            {incident.priority?.toUpperCase()}
                         </span>
                     </CardTitle>
                 </CardHeader>
@@ -174,7 +173,7 @@ export function IncidenciasUsuario({ incidencia, servicio, tecnico }) {
                         </div>
                     </div>
 
-                    {incidencia.estado === "Resuelto" && (
+                    {incidencia.estado === "Cerrada" && (
                         <div className="mt-8 bg-green-50 p-6 rounded-lg border border-green-200">
                             <div className="flex items-center gap-2 mb-4">
                                 <CheckCircle2 className="h-6 w-6 text-green-600" />
@@ -195,7 +194,7 @@ export function IncidenciasUsuario({ incidencia, servicio, tecnico }) {
                                     </p>
                                 </div>
                             </div>   
-                            {incidencia.estado === "Resuelto" &&
+                            {incidencia.estado === "Cerrada" &&
                                 <EvaluacionDialog incidenciaId={incident.id} isOpen={isDialogOpen} setIsOpen={setIsDialogOpen}/>    
                             }
                             

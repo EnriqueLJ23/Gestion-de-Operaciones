@@ -6,22 +6,9 @@ export const createReporte = async (data, session) => {
   console.log("Creating report with data:", data);
   
   try {
-    // Get the service details to set up SLA times
-    const service = await prisma.servicio.findUnique({
-      where: {
-        id: parseInt(data.servicio)
-      }
-    });
-
-    if (!service) {
-      throw new Error("Servicio no encontrado");
-    }
 
     // Calculate response and resolution deadlines based on service SLAs
     const fechadecreacion = new Date();
-    const fecha_limite_respuesta = new Date(fechadecreacion.getTime() + service.tiempo_respuesta * 60000); // Convert minutes to milliseconds
-    const fecha_limite_resolucion = new Date(fechadecreacion.getTime() + service.tiempo_resolucion * 60000);
-
     const nuevoReporte = await prisma.reportes.create({
       data: {
         aula: {
@@ -34,21 +21,13 @@ export const createReporte = async (data, session) => {
             id: parseInt(data.elemento)
           }
         },
-        servicio: {
-          connect: {
-            id: parseInt(data.servicio)
-          }
-        },
         descripcion: data.descripcion,
         creador: {
           connect: {
             id: parseInt(session)
           }
         },
-        prioridad: service.nivel_prioridad.toLowerCase(),
         fechadecreacion: fechadecreacion,
-        fecha_limite_respuesta: fecha_limite_respuesta,
-        fecha_limite_resolucion: fecha_limite_resolucion,
         estado: "Pendiente"
       },
     });
@@ -69,40 +48,26 @@ export const updateReporte = async (data) => {
   const { incidenteId, tecnicoAsignadoId, servicioId, categoria, prioridad } = data;
 
   try {
+    
+    const tiemposRespuesta = {
+      'Alta': 2,     // 2 horas para prioridad alta
+      'Media': 4,    // 4 horas para prioridad media
+      'Baja': 8      // 8 horas para prioridad baja
+    };
+    const fechaActual = new Date();
+    const fechaLimiteRespuesta = new Date(fechaActual.getTime() + (tiemposRespuesta[prioridad] * 60 * 60 * 1000));
+    
     const updateData = {
       tecnicoasignado: {
         connect: {
           id: parseInt(tecnicoAsignadoId)
         }
-      }
+      },
+      prioridad,
+      categoria,
+      estado: "Asignado",
+      fecha_limite_respuesta: fechaLimiteRespuesta,
     };
-
-    // If service ID is provided, include it in the update
-    if (servicioId) {
-      const service = await prisma.servicio.findUnique({
-        where: {
-          id: parseInt(servicioId)
-        }
-      });
-
-      if (!service) {
-        throw new Error("Servicio no encontrado");
-      }
-
-      // Calculate new SLA deadlines based on the updated service
-      const fecha_actualizacion = new Date();
-      updateData.servicio = {
-        connect: {
-          id: parseInt(servicioId)
-        }
-      };
-      updateData.fecha_limite_respuesta = new Date(fecha_actualizacion.getTime() + service.tiempo_respuesta * 60000);
-      updateData.fecha_limite_resolucion = new Date(fecha_actualizacion.getTime() + service.tiempo_resolucion * 60000);
-      updateData.prioridad = prioridad || service.nivel_prioridad.toLowerCase();
-      updateData.categoria = categoria;
-      updateData.estado = "Asignado";
-
-    }
 
     // Update the report with new data
     const updatedReporte = await prisma.reportes.update({
@@ -111,7 +76,7 @@ export const updateReporte = async (data) => {
       },
       data: updateData,
     });
-
+    revalidatePath(`/incidencias`);
     revalidatePath(`/incidencias/${incidenteId}`);
     return { success: true, reporte: updatedReporte };
   } catch (error) {
@@ -120,41 +85,13 @@ export const updateReporte = async (data) => {
   }
 };
 
-
-export async function updateIncident({
-  id,
-  estado,
-  resolucion,
-  requiresChange
-}) {
-  try {
-    const updatedIncident = await prisma.reportes.update({
-      where: { id },
-      data: {
-        estado: "Resuelto",
-        solucion: resolucion,
-        requiere_cambios: requiresChange,
-        fecha_resolucion: new Date()
-      }
-    })
-
-    revalidatePath('/incidencias')
-    return { success: true, data: updatedIncident }
-  } catch (error) {
-    console.error('Error updating incident:', error)
-    return { success: false, error: 'Failed to update incident' }
-  }
-}
-
-
-
 // Acción para cuando el técnico comienza a atender la incidencia
 export async function attendIncident(incidentId) {
   try {
     const updatedIncident = await prisma.reportes.update({
       where: { id: parseInt(incidentId) },
       data: {
-        estado: "En Diagnostico",
+        estado: "En Progreso",
       }
     });
     
@@ -179,7 +116,7 @@ export async function registerDiagnosis({
       const updatedIncident = await prisma.reportes.update({
         where: { id: parseInt(incidentId) },
         data: {
-          estado: requiresChange ? "Esperando Confirmacion" : "En Proceso",
+          estado: requiresChange ? "Esperando Autorizacion" : "En Progreso",
           diagnostico: diagnosis,
           requiere_cambios: requiresChange
         }
@@ -222,7 +159,7 @@ export async function registerDiagnosis({
 
       return { updatedIncident };
     });
-
+    revalidatePath(`/incidencias/`);
     revalidatePath(`/incidencias/${incidentId}`);
     return { success: true, data: result };
   } catch (error) {
@@ -233,54 +170,6 @@ export async function registerDiagnosis({
     };
   }
 }
-
-// Acción para crear una orden de trabajo
-export async function createWorkOrder({
-  incidentId,
-  type,
-  description,
-  implementadorId
-}) {
-  try {
-    // Comenzar una transacción para asegurar consistencia
-    const result = await prisma.$transaction(async (prisma) => {
-      // Crear la orden de trabajo
-      const workOrder = await prisma.cambios.create({
-        data: {
-          titulo: `Cambio requerido para incidente #${incidentId}`,
-          descripcion: description,
-          tipo: type,
-          estado: "Pendiente",
-          prioridad: "Media", // Esto podría ser dinámico basado en la incidencia
-          impacto: "Medio",
-          reporte: {
-            connect: { id: parseInt(incidentId) }
-          },
-          implementador: {
-            connect: { id: parseInt(implementadorId) }
-          }
-        }
-      });
-
-      // Actualizar el estado de la incidencia
-      const updatedIncident = await prisma.reportes.update({
-        where: { id: parseInt(incidentId) },
-        data: {
-          estado: "Esperando Confirmación"
-        }
-      });
-
-      return { workOrder, updatedIncident };
-    });
-
-    revalidatePath(`/incidencias/${incidentId}`);
-    return { success: true, data: result };
-  } catch (error) {
-    console.error('Error creating work order:', error);
-    return { success: false, error: 'No se pudo crear la orden de trabajo' };
-  }
-}
-
 
 export async function registerSolution({
   incidentId,
@@ -308,7 +197,7 @@ export async function registerSolution({
         where: { id: incidentId },
         data: {
           solucion: solution,
-          estado: "Resuelto",
+          estado: "Cerrada",
           fecha_resolucion: new Date()
         }
       });
@@ -362,28 +251,6 @@ export async function registerSolution({
   }
 }
 
-// Acción para actualizar el estado de la incidencia
-export async function updateIncidentStatus({
-  incidentId,
-  status
-}) {
-  try {
-    const updatedIncident = await prisma.reportes.update({
-      where: { id: parseInt(incidentId) },
-      data: {
-        estado: status
-      }
-    });
-
-    revalidatePath(`/incidencias/${incidentId}`);
-    return { success: true, data: updatedIncident };
-  } catch (error) {
-    console.error('Error updating incident status:', error);
-    return { success: false, error: 'No se pudo actualizar el estado' };
-  }
-}
-
-
 export async function createEvaluacion(formData) {
   console.log(formData);
   
@@ -435,8 +302,6 @@ export async function createEvaluacion(formData) {
   }
 }
 
-
-// Acción para actualizar el estado de la incidencia
 export async function updateCambio(data) {
   try {
     const updatedCambio = await prisma.cambios.update({
@@ -451,7 +316,7 @@ export async function updateCambio(data) {
     await prisma.reportes.update({
       where: { id: parseInt(data.incidenciaId) },
       data: {
-        estado: data.status === 'Autorizado' ? 'En Proceso' : 'Cancelado'
+        estado: data.status === 'Autorizado' ? 'En Progreso' : 'Cancelado'
     }
     });
     revalidatePath(`/cambios`);

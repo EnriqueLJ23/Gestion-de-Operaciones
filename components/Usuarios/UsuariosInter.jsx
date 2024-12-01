@@ -21,14 +21,10 @@ import { Search, UserPlus, Edit2, Trash2 } from 'lucide-react';
 import DeleteDialog from '../DeleteDialog';
 import { FormUsuarios } from '@/app/(with-nav)/usuarios/FormU';
 const UserManagement = ({usuarios, departamentos}) => {
-  const [users] = useState([
-    { id: 1, name: 'Ana García', email: 'ana.garcia@universidad.edu', role: 'administrador', status: 'active' },
-    { id: 2, name: 'Gonzalo Gonzales', email: 'carlos.lopez@universidad.edu', role: 'tecnico', status: 'active' },
-    { id: 3, name: 'Ramiro Ramirez', email: 'maria.rodriguez@universidad.edu', role: 'usuario_normal', status: 'inactive' },
-  ]);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [isOpen, setIsOpen] = useState(false);
+  
   const handleDeleteUser = async (userId) => {
     // Implement your delete logic here
     console.log(`Deleting user with ID: ${userId}`);
@@ -40,7 +36,7 @@ const UserManagement = ({usuarios, departamentos}) => {
       tecnico: 'bg-blue-100 text-blue-800',
       usuario_normal: 'bg-green-100 text-green-800'
     };
-    return colors[role] || 'bg-gray-100 text-gray-800';
+    return colors[role] || 'bg-orange-100 text-orange-800';
   };
 
   const getStatusBadgeColor = (status) => {
@@ -95,6 +91,7 @@ const UserManagement = ({usuarios, departamentos}) => {
                         {user.rol === 'administrador' && 'Administrador'}
                         {user.rol === 'tecnico' && 'Tecnico'}
                         {user.rol === 'usuario_normal' && 'Usuario'}
+                        {user.rol === 'jefe_de_taller' && 'Jefe de Taller'}
                       </Badge>
                     </TableCell>
                     <TableCell>

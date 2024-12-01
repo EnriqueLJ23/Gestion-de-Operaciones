@@ -201,6 +201,7 @@ export default async function Incidencias() {
     tecnicoNombre: tecnicoasignado?.nombre || 'No Asignado',
     
   }));
+console.log(incidencias);
 
 
   return (

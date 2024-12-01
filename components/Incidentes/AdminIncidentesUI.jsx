@@ -25,13 +25,13 @@ const getStatusConfig = (status) => {
       icon: <Clock className="h-4 w-4" />,
       description: "Esperando asignación"
     },
-    "En Diagnostico": {
+    "En Progreso": {
       color: "bg-blue-100 border-blue-300",
       textColor: "text-blue-800",
       icon: <Wrench className="h-4 w-4" />,
       description: "En análisis técnico"
     },
-    "Esperando Confirmacion": {
+    "Esperando Autorizacion": {
       color: "bg-purple-100 border-purple-300",
       textColor: "text-purple-800",
       icon: <ClipboardCheck className="h-4 w-4" />,
@@ -43,7 +43,7 @@ const getStatusConfig = (status) => {
       icon: <Users className="h-4 w-4" />,
       description: "En proceso"
     },
-    "Resuelto": {
+    "Cerrada": {
       color: "bg-pink-100 border-pink-300",
       textColor: "text-green-800",
       icon: <CheckCircle className="h-4 w-4" />,
@@ -344,21 +344,10 @@ const AdminIncidentesUI = ({ incidencias, aulas, elementos, session, edificio, s
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos los estados</SelectItem>
-                <SelectItem value="pendiente">Pendientes</SelectItem>
-                <SelectItem value="en progreso">En Progreso</SelectItem>
-                <SelectItem value="resolved">Resueltas</SelectItem>
-              </SelectContent>
-            </Select>
-  
-            <Select value={serviceFilter} onValueChange={setServiceFilter}>
-              <SelectTrigger className="bg-background">
-                <SelectValue placeholder="Servicio" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos los servicios</SelectItem>
-                <SelectItem value="computadora">computadora</SelectItem>
-                <SelectItem value="proyector">Proyección</SelectItem>
-                <SelectItem value="impresora">Impresión</SelectItem>
+                <SelectItem value="Pendiente">Pendientes</SelectItem>
+                <SelectItem value="En Progreso">En Progreso</SelectItem>
+                <SelectItem value="Cerrada">Resueltas</SelectItem>
+                <SelectItem value="Liberado">Liberadas</SelectItem>
               </SelectContent>
             </Select>
   
@@ -479,17 +468,6 @@ const AdminIncidentesUI = ({ incidencias, aulas, elementos, session, edificio, s
                 servicio={servicio}
                 departamento={departamento}
               />
-  
-              <Select value={timeRange} onValueChange={setTimeRange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Período" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="today">Hoy</SelectItem>
-                  <SelectItem value="week">Esta Semana</SelectItem>
-                  <SelectItem value="month">Este Mes</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </div>
   

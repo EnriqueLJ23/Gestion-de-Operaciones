@@ -39,7 +39,6 @@ const FormSchema = z.object({
     aula: z.string({ required_error: "El aula es requerida" }),
     tipoele: z.string({ required_error: "El tipo es requerido" }),
     elemento: z.string({ required_error: "El elemento es requerido" }),
-    servicio: z.string({ required_error: "El servicio es requerido" }),
     descripcion: z.string({ required_error: "La descripción es requerida" })
         .min(10, { message: "La descripción debe tener al menos 10 caracteres" }),
 })
@@ -58,7 +57,6 @@ export function ReporteForm({ aulas, elementos, session,edificio, servicio,depar
         aula: undefined,
         tipoele: undefined,
         elemento: undefined,
-        servicio: undefined,
         descripcion: ""
 
     }
@@ -347,35 +345,7 @@ const filteredAulas = aulas.filter(
                             />
                         </div>
 
-                        {/* Servicio Select */}
-                        <FormField
-                            control={form.control}
-                            name="servicio"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Servicio</FormLabel>
-                                    <Select 
-                                        onValueChange={field.onChange} 
-                                        value={field.value}
-                                        disabled={!selectedType}
-                                    >
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Seleccione un servicio" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {filteredServices.map((service) => (
-                                                <SelectItem key={service.id} value={service.id.toString()}>
-                                                    {service.nombre}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+           
 
                         {/* Descripción Textarea */}
                         <FormField
