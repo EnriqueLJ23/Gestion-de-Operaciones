@@ -84,6 +84,13 @@ export default async function Page({ params }) {
       </>
     )  
   }
+  if (session.user.role === "jefe_de_taller" ) {
+    return (
+      <>
+        <IncidenciaID incidencia={incidencia} servicio={servicio} tecnico={tecnico}/>
+      </>
+    )  
+  }
   if (session.user.role === "tecnico" ) {
     return (
       <>

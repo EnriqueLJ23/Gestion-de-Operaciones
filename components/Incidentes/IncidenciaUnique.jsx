@@ -57,6 +57,7 @@ const formSchema = z.object({
 export function IncidenciaID({ incidencia, servicio, tecnico }) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showForm, setShowForm] = useState(incidencia.estado === "Pendiente" ? false : true);
+    const [workOrder, setWorkOrder] = useState(incidencia.cambios[0] || null);
     const { toast } = useToast();
 
     const form = useForm({
@@ -178,235 +179,257 @@ export function IncidenciaID({ incidencia, servicio, tecnico }) {
 
                 <CardContent className="p-6">
                     <div className="flex flex-col">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {/* Left Column - Incident Details */}
-                        <div className="space-y-6">
-                            <div className="bg-muted/50 p-4 rounded-lg">
-                                <h3 className="text-lg font-semibold mb-4">Detalles de la Incidencia</h3>
-                                <div className="space-y-3">
-                                    <div className="flex items-start gap-2">
-                                        <MapPin className="h-4 w-4 text-muted-foreground mt-1" />
-                                        <div>
-                                            <p className="font-medium">{incident.location}</p>
-                                            <p className="text-sm text-muted-foreground">
-                                                {incident.building} - {incident.room}
-                                            </p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            {/* Left Column - Incident Details */}
+                            <div className="space-y-6">
+                                <div className="bg-muted/50 p-4 rounded-lg">
+                                    <h3 className="text-lg font-semibold mb-4">Detalles de la Incidencia</h3>
+                                    <div className="space-y-3">
+                                        <div className="flex items-start gap-2">
+                                            <MapPin className="h-4 w-4 text-muted-foreground mt-1" />
+                                            <div>
+                                                <p className="font-medium">{incident.location}</p>
+                                                <p className="text-sm text-muted-foreground">
+                                                    {incident.building} - {incident.room}
+                                                </p>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <div className="flex items-center gap-2">
-                                        <Clock className="h-4 w-4 text-muted-foreground" />
-                                        <div>
+                                        <div className="flex items-center gap-2">
+                                            <Clock className="h-4 w-4 text-muted-foreground" />
+                                            <div>
+                                                <p className="text-sm">
+                                                    Reportado: {new Date(incident.reportedAt).toLocaleString()}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-2">
+                                            <User className="h-4 w-4 text-muted-foreground" />
                                             <p className="text-sm">
-                                                Reportado: {new Date(incident.reportedAt).toLocaleString()}
+                                                Reportado por: <span className="font-medium">{incident.reportedBy}</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 className="font-medium mb-2">Descripción</h4>
+                                    <p className="text-muted-foreground bg-background p-3 rounded-lg border">
+                                        {incident.description}
+                                    </p>
+                                </div>
+
+                                <div className="flex items-center gap-4">
+                                    <div className="flex items-center gap-2">
+                                        <span className="font-medium">Prioridad:</span>
+                                        <span className={getPriorityStyles(incident.priority)}>
+                                            {incident.priority}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Right Column - Form or Edit Button */}
+                            <div>
+
+
+                                {true && (
+                                    <Form {...form}>
+                                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                                            <FormField
+                                                control={form.control}
+                                                name="categoria"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>Categoria</FormLabel>
+                                                        <FormControl>
+                                                            <Select
+                                                                value={field.value}
+                                                                onValueChange={field.onChange}
+                                                                disabled={showForm}
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Seleccione la categoria" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    <SelectItem value="Hardware">Hardware</SelectItem>
+                                                                    <SelectItem value="Software">Software</SelectItem>
+                                                                    <SelectItem value="Redes">Redes</SelectItem>
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+
+                                            <FormField
+                                                control={form.control}
+                                                name="tecnicoId"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>Técnico</FormLabel>
+                                                        <FormControl>
+                                                            <Select
+                                                                value={field.value}
+                                                                onValueChange={field.onChange}
+                                                                disabled={showForm}
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Seleccione un técnico" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {tecnico.map((technician) => (
+                                                                        <SelectItem
+                                                                            key={technician.id}
+                                                                            value={technician.id.toString()}
+                                                                        >
+                                                                            {technician.nombre} - {technician.especialidad}
+                                                                        </SelectItem>
+                                                                    ))}
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={form.control}
+                                                name="prioridad"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>Prioridad</FormLabel>
+                                                        <FormControl>
+                                                            <Select
+                                                                value={field.value}
+                                                                onValueChange={field.onChange}
+                                                                disabled={showForm}
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Seleccione la prioridad" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    <SelectItem value="Alta">Alta</SelectItem>
+                                                                    <SelectItem value="Media">Media</SelectItem>
+                                                                    <SelectItem value="Baja">Baja</SelectItem>
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+
+                                            {incidencia.estado !== "Pendiente" && incidencia.estado !== "Liberado" && showForm && (
+                                                <Button
+                                                    onClick={() => setShowForm(false)}
+                                                    className="w-full mb-6"
+                                                    type="button"
+                                                >
+                                                    Editar Incidencia
+                                                </Button>
+                                            )}
+                                            {incidencia.estado === "Pendiente" && (
+                                                <Button
+                                                    type="submit"
+                                                    className="w-full"
+                                                    disabled={isSubmitting}
+                                                >
+                                                    {isSubmitting ? (
+                                                        <>
+                                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                            Actualizando...
+                                                        </>
+                                                    ) : (
+                                                        'Actualizar Incidencia'
+                                                    )}
+                                                </Button>)}
+
+                                        </form>
+                                    </Form>
+
+                                )}
+
+                            </div>
+
+                        </div>
+                        <div className="space-y-3">
+
+                            {incidencia.estado === "Liberado" && (
+                                <div className="mt-8 bg-green-50 p-6 rounded-lg border border-green-200">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <CheckCircle2 className="h-6 w-6 text-green-600" />
+                                        <h3 className="text-lg font-semibold text-green-800">Resolución de Incidencia</h3>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                        <div>
+                                            <h4 className="font-medium text-green-800 mb-2">Diagnóstico</h4>
+                                            <p className="bg-white p-4 rounded-lg border border-green-200 text-green-800">
+                                                {incidencia.diagnostico}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <h4 className="font-medium text-green-800 mb-2">Solución</h4>
+                                            <p className="bg-white p-4 rounded-lg border border-green-200 text-green-800">
+                                                {incidencia.solucion}
                                             </p>
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center gap-2">
-                                        <User className="h-4 w-4 text-muted-foreground" />
-                                        <p className="text-sm">
-                                            Reportado por: <span className="font-medium">{incident.reportedBy}</span>
-                                        </p>
-                                    </div>
                                 </div>
-                            </div>
-
-                            <div>
-                                <h4 className="font-medium mb-2">Descripción</h4>
-                                <p className="text-muted-foreground bg-background p-3 rounded-lg border">
-                                    {incident.description}
-                                </p>
-                            </div>
-
-                            <div className="flex items-center gap-4">
-                                <div className="flex items-center gap-2">
-                                    <span className="font-medium">Prioridad:</span>
-                                    <span className={getPriorityStyles(incident.priority)}>
-                                        {incident.priority}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Right Column - Form or Edit Button */}
-                        <div>
-
-
-                            {true && (
-                                <Form {...form}>
-                                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                                        <FormField
-                                            control={form.control}
-                                            name="categoria"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Categoria</FormLabel>
-                                                    <FormControl>
-                                                        <Select
-                                                            value={field.value}
-                                                            onValueChange={field.onChange}
-                                                            disabled={showForm}
-                                                        >
-                                                            <SelectTrigger>
-                                                                <SelectValue placeholder="Seleccione la categoria" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                <SelectItem value="Hardware">Hardware</SelectItem>
-                                                                <SelectItem value="Software">Software</SelectItem>
-                                                                <SelectItem value="Redes">Redes</SelectItem>
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                      
-                                        <FormField
-                                            control={form.control}
-                                            name="tecnicoId"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Técnico</FormLabel>
-                                                    <FormControl>
-                                                        <Select
-                                                            value={field.value}
-                                                            onValueChange={field.onChange}
-                                                            disabled={showForm}
-                                                        >
-                                                            <SelectTrigger>
-                                                                <SelectValue placeholder="Seleccione un técnico" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                {tecnico.map((technician) => (
-                                                                    <SelectItem
-                                                                        key={technician.id}
-                                                                        value={technician.id.toString()}
-                                                                    >
-                                                                        {technician.nombre} - {technician.especialidad}
-                                                                    </SelectItem>
-                                                                ))}
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="prioridad"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Prioridad</FormLabel>
-                                                    <FormControl>
-                                                        <Select
-                                                            value={field.value}
-                                                            onValueChange={field.onChange}
-                                                            disabled={showForm}
-                                                        >
-                                                            <SelectTrigger>
-                                                                <SelectValue placeholder="Seleccione la prioridad" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                <SelectItem value="Alta">Alta</SelectItem>
-                                                                <SelectItem value="Media">Media</SelectItem>
-                                                                <SelectItem value="Baja">Baja</SelectItem>
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-
-                                        {incidencia.estado !== "Pendiente" && incidencia.estado !== "Liberado" && showForm && (
-                                            <Button
-                                                onClick={() => setShowForm(false)}
-                                                className="w-full mb-6"
-                                                type="button"
-                                            >
-                                                Editar Incidencia
-                                            </Button>
-                                        ) }
-                                        {incidencia.estado === "Pendiente" && (
-                                            <Button
-                                            type="submit"
-                                            className="w-full"
-                                            disabled={isSubmitting}
-                                        >
-                                            {isSubmitting ? (
-                                                <>
-                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                    Actualizando...
-                                                </>
-                                            ) : (
-                                                'Actualizar Incidencia'
-                                            )}
-                                        </Button>)}
-
-                                    </form>
-                                </Form>
-                                
                             )}
-                            
-                        </div>
-                        
-                    </div>
-                        <div>
-                              
-                    {incidencia.estado === "Liberado" && (
-                        <div className="mt-8 bg-green-50 p-6 rounded-lg border border-green-200">
-                            <div className="flex items-center gap-2 mb-4">
-                                <CheckCircle2 className="h-6 w-6 text-green-600" />
-                                <h3 className="text-lg font-semibold text-green-800">Resolución de Incidencia</h3>
-                            </div>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                <div>
-                                    <h4 className="font-medium text-green-800 mb-2">Diagnóstico</h4>
-                                    <p className="bg-white p-4 rounded-lg border border-green-200 text-green-800">
-                                        {incidencia.diagnostico}
+
+
+                            {incidencia.estado === "Cerrada" && (
+                                <div className="mt-8 bg-green-50 p-6 rounded-lg border border-green-200">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <CheckCircle2 className="h-6 w-6 text-green-600" />
+                                        <h3 className="text-lg font-semibold text-green-800">Resolución de Incidencia</h3>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                        <div>
+                                            <h4 className="font-medium text-green-800 mb-2">Diagnóstico</h4>
+                                            <p className="bg-white p-4 rounded-lg border border-green-200 text-green-800">
+                                                {incidencia.diagnostico}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <h4 className="font-medium text-green-800 mb-2">Solución</h4>
+                                            <p className="bg-white p-4 rounded-lg border border-green-200 text-green-800">
+                                                {incidencia.solucion}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            )}
+
+                            {(workOrder && incidencia.estado === "Liberado" || incidencia.estado === "Cerrada") && (
+                                <div className="bg-green-50 border border-green-200 p-4 rounded-lg space-y-3">
+                                    <div className="flex justify-between items-center">
+                                        <h4 className="font-medium">RFC #{workOrder.id}</h4>
+                                        <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                                            {workOrder.estado}
+                                        </span>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <p className="text-sm"><span className="font-medium">Componente:</span> {workOrder.tipo}</p>
+                                        <p className="text-sm"><span className="font-medium">Titulo:</span> {workOrder.titulo}</p>
+                                        <p className="text-sm"><span className="font-medium">Descripción:</span> {workOrder.descripcion}</p>
+                                    </div>
+                                    <p className="text-sm text-green-800">
+                                        Se ha autorizado el cambio del componente.
                                     </p>
                                 </div>
-                                <div>
-                                    <h4 className="font-medium text-green-800 mb-2">Solución</h4>
-                                    <p className="bg-white p-4 rounded-lg border border-green-200 text-green-800">
-                                        {incidencia.solucion}
-                                    </p>
-                                </div>
-                            </div>   
-                            
-                        </div>
-                    )}
-                      {incidencia.estado === "Cerrada" && (
-                        <div className="mt-8 bg-green-50 p-6 rounded-lg border border-green-200">
-                            <div className="flex items-center gap-2 mb-4">
-                                <CheckCircle2 className="h-6 w-6 text-green-600" />
-                                <h3 className="text-lg font-semibold text-green-800">Resolución de Incidencia</h3>
-                            </div>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                <div>
-                                    <h4 className="font-medium text-green-800 mb-2">Diagnóstico</h4>
-                                    <p className="bg-white p-4 rounded-lg border border-green-200 text-green-800">
-                                        {incidencia.diagnostico}
-                                    </p>
-                                </div>
-                                <div>
-                                    <h4 className="font-medium text-green-800 mb-2">Solución</h4>
-                                    <p className="bg-white p-4 rounded-lg border border-green-200 text-green-800">
-                                        {incidencia.solucion}
-                                    </p>
-                                </div>
-                            </div>   
-                            
-                        </div>
-                    )}
+                            )}
+
                         </div>
                     </div>
-                    
+
                 </CardContent>
             </Card>
         </div>
